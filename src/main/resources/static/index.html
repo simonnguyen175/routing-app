@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Routing Demo</title>
+    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+<div id="app">
+    <div id="map-container">
+        <div id="map"></div>
+    </div>
+
+    <div id="control-panel">
+        <h2>Routing App</h2>
+        <div class="road-type">
+            <label>
+                <input type="radio" name="routeMode" value="driving" checked>
+                Driving
+            </label>
+            <label>
+                <input type="radio" name="routeMode" value="walking">
+                Walking
+            </label>
+        </div>
+
+        <div class="btn-group">
+            <button id="btnShowGraph">Show Graph</button>
+            <button id="btnHideGraph">Hide Graph</button>
+        </div>
+
+        <div class="form-group">
+            <label>From:</label>
+            <input type="text" id="from-location" class="location-display" readonly placeholder="Select a location">
+            <button class="location-btn" id="btnPickFrom">
+                <i class="fa-solid fa-location-crosshairs"></i>
+            </button>
+        </div>
+
+        <div class="form-group">
+            <label>To:</label>
+            <input type="text" id="to-location" class="location-display" readonly placeholder="Select a location">
+            <button class="location-btn" id="btnPickTo">
+                <i class="fa-solid fa-location-crosshairs"></i>
+            </button>
+        </div>
+
+        <div class="btn-group">
+            <button id="btnFindRoute">Find Route</button>
+            <button id="btnHideRoute">Hide Route</button>
+        </div>
+    </div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="/main.js?v=123"></script>
+</body>
+</html>
