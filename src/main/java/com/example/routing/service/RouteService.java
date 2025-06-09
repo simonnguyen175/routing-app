@@ -6,6 +6,7 @@ import com.example.routing.model.Edge;
 import com.example.routing.repository.NodeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.cache.annotation.Cacheable;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -20,7 +21,9 @@ public class RouteService {
 
     private static final double DELTA = 0.01;
 
+    @Cacheable(value = "routeCache", key = "#startId + '-' + #endId + '-' + #routeType")
     public List<Node> findShortestRoute(Long startId, Long endId, String routeType) {
+        System.out.println("THỰC SỰ chạy hàm này: " + startId + " - " + endId);
         Node start = nodeRepository.findById(startId).orElseThrow();
         Node end = nodeRepository.findById(endId).orElseThrow();
 
