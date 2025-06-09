@@ -20,37 +20,6 @@ public class RouteService {
 
     private static final double DELTA = 0.01;
 
-//    public List<Node> findShortestRoute(Long startId, Long endId, String routeType) {
-//        // 1. Lấy thông tin hai node đầu cuối
-//        Node start = nodeRepository.findById(startId).orElseThrow();
-//        Node end = nodeRepository.findById(endId).orElseThrow();
-//
-//        // 2. Xác định bounding box
-//        double latMin = Math.min(start.getLat(), end.getLat()) - DELTA;
-//        double latMax = Math.max(start.getLat(), end.getLat()) + DELTA;
-//        double lonMin = Math.min(start.getLon(), end.getLon()) - DELTA;
-//        double lonMax = Math.max(start.getLon(), end.getLon()) + DELTA;
-//
-//        // 3. Lấy subgraph
-//        Graph subGraph = graphService.getGraph(latMin, latMax, lonMin, lonMax, routeType);
-//
-//        System.out.print("Subgraph edges: " + subGraph.getEdges().size() + ", ");
-//        System.out.println("Subgraph nodes: " + subGraph.getNodes().size());
-//
-//        // 4. Chuẩn bị dữ liệu cho A*
-//        Map<Long, Node> nodeMap = subGraph.getNodes().stream()
-//                .collect(Collectors.toMap(Node::getId, n -> n));
-//        List<Edge> edgeList = subGraph.getEdges();
-//
-//        Map<Long, List<Edge>> adjList = new HashMap<>();
-//        for (Edge edge : edgeList) {
-//            adjList.computeIfAbsent(edge.getFromId(), k -> new ArrayList<>()).add(edge);
-//        }
-//
-//        // 5. Chạy thuật toán A* và trả về trực tiếp list node đường đi
-//        return aStar(startId, endId, nodeMap, adjList);
-//    }
-
     public List<Node> findShortestRoute(Long startId, Long endId, String routeType) {
         Node start = nodeRepository.findById(startId).orElseThrow();
         Node end = nodeRepository.findById(endId).orElseThrow();

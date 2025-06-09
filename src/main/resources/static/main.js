@@ -89,7 +89,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (pickMode === 'from') {
             if (fromMarker) map.removeLayer(fromMarker);
             fromMarker = L.circleMarker([lat, lng], {
-                radius: 6, color: 'black',      // viền đỏ
+                radius: 5, color: 'black',      // viền đỏ
                 fillColor: 'white',  // nền đỏ nhạt
                 fillOpacity: 0.8
             }).addTo(map);
@@ -126,12 +126,54 @@ document.addEventListener('DOMContentLoaded', () => {
         // build polyline from the node array
         const coords = data.map(node => [node.lat, node.lon]);
         if (routeLayer) map.removeLayer(routeLayer);
-        routeLayer = L.layerGroup().addTo(map);
+        routeLayer = L.featureGroup().addTo(map);
+
+        // 2. Vẽ dotline từ điểm chọn đến node đầu
+        const startNode = data[0];
+        L.polyline(
+            [[fromLat, fromLon], [startNode.lat, startNode.lon]],
+            {color: 'blue', weight: 3, dashArray: '2, 10', opacity: 0.9}
+        ).addTo(routeLayer);
+
+        // 3. Vẽ dotline từ điểm chọn đến node cuối
+        const endNode = data[data.length - 1];
+        L.polyline(
+            [[toLat, toLon], [endNode.lat, endNode.lon]],
+            {color: 'blue', weight: 3, dashArray: '2, 10', opacity: 0.9}
+        ).addTo(routeLayer);
+
+        function approxDistance(lat1, lon1, lat2, lon2) {
+            const R = 111320; // mét trên 1 độ
+            const avgLat = (lat1 + lat2) / 2 * Math.PI / 180;
+            const dLat = (lat2 - lat1) * R;
+            const dLon = (lon2 - lon1) * R * Math.cos(avgLat);
+            return Math.sqrt(dLat * dLat + dLon * dLon);
+        }
+
+        let totalDist = 0;
+        totalDist += approxDistance(fromLat, fromLon, data[0].lat, data[0].lon);
         for (let i = 1; i < data.length; i++) {
             const from = data[i - 1];
             const to = data[i];
-            L.polyline([[from.lat, from.lon], [to.lat, to.lon]], {color: 'blue', weight: 5}).addTo(routeLayer);
+            L.polyline([[from.lat, from.lon], [to.lat, to.lon]], {
+                color: 'blue',
+                weight: 3,
+                dashArray: routeType === 'walking' ? '2, 10' : null
+            }).addTo(routeLayer);
+            totalDist += approxDistance(data[i-1].lat, data[i-1].lon, data[i].lat, data[i].lon);
         }
+        totalDist += approxDistance(toLat, toLon, data[data.length - 1].lat, data[data.length - 1].lon);
+
+        // Hiển thị info
+        const infoDiv = document.getElementById('route-info');
+        let distanceText;
+        if (totalDist >= 1000) {
+            distanceText = `${(totalDist / 1000).toFixed(2)} km`;
+        } else {
+            distanceText = `${Math.round(totalDist)} m`;
+        }
+        infoDiv.innerText = `Fastest route: ${distanceText}`;
+
         map.fitBounds(routeLayer.getBounds());
     });
 
@@ -150,5 +192,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         inpFrom.value = '';
         inpTo.value = '';
+        document.getElementById('route-info').innerText = '';
     });
 });
