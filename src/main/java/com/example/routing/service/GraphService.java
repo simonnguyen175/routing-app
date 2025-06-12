@@ -7,6 +7,7 @@ import com.example.routing.repository.EdgeRepository;
 import com.example.routing.repository.NodeRepository;
 import jakarta.annotation.PostConstruct;
 import org.springframework.stereotype.Service;
+import com.harium.storage.kdtree.*;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -28,6 +29,7 @@ public class GraphService {
     private final EdgeRepository edgeRepo;
 
     private static Graph fullGraph;
+    private KDTree<Node> kdTree;
 
     @PostConstruct
     public void loadFullGraph() {
@@ -35,6 +37,12 @@ public class GraphService {
         List<Edge> edges = edgeRepo.findAll();
         fullGraph = new Graph(nodes, edges);
         System.out.println("Loaded full graph: " + nodes.size() + " nodes, " + edges.size() + " edges");
+
+        kdTree = new KDTree<>(2);
+        for (Node node : nodes) {
+            kdTree.insert(new double[]{node.getLon(), node.getLat()}, node);
+        }
+        System.out.print("KDTree built with " + nodes.size() + " nodes.\n");
     }
 
     public Graph getFullGraph() {
@@ -66,5 +74,13 @@ public class GraphService {
         List<Node> nodes = nodeRepo.findAllById(nodeIds);
 
         return new Graph(nodes, edges);
+    }
+
+    public Node findNearestNode(double lat, double lon) {
+        if (kdTree == null) {
+            throw new IllegalStateException("KDTree not initialized");
+        }
+        double[] point = {lon, lat}; // KDTree expects [lon, lat]
+        return kdTree.nearest(point);
     }
 }

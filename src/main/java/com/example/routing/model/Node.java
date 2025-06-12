@@ -23,6 +23,11 @@ public class Node {
         this.geom = geom;
     }
 
+    public Node(Long id, Double lat, Double lon) {
+        this.id = id;
+        this.geom = new org.locationtech.jts.geom.GeometryFactory().createPoint(new org.locationtech.jts.geom.Coordinate(lon, lat));
+    }
+
     public Long getId() {
         return id;
     }

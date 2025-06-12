@@ -21,11 +21,11 @@ public class RouteService {
 
     private static final double DELTA = 0.01;
 
-    @Cacheable(value = "routeCache", key = "#startId + '-' + #endId + '-' + #routeType")
-    public List<Node> findShortestRoute(Long startId, Long endId, String routeType) {
+    @Cacheable(value = "routeCache", key = "#startNode + '-' + #endNode + '-' + #routeType")
+    public List<Node> findShortestRoute(Node startNode, Node endNode, String routeType) {
+        Long startId = startNode.getId();
+        Long endId = endNode.getId();
         System.out.println("THỰC SỰ chạy hàm này: " + startId + " - " + endId);
-        Node start = nodeRepository.findById(startId).orElseThrow();
-        Node end = nodeRepository.findById(endId).orElseThrow();
 
         // Use the full graph loaded at startup
         Graph graph = graphService.getFullGraph();
@@ -59,7 +59,6 @@ public class RouteService {
         while (!heap.isEmpty()) {
             NodeRecord current = heap.poll();
             if (current.nodeId.equals(endId)) {
-                // Đã tới đích -> reconstruct path with Node objects
                 return reconstructPath(cameFrom, current.nodeId, startId, nodeMap);
             }
 
@@ -74,7 +73,7 @@ public class RouteService {
                 }
             }
         }
-        // Không tìm thấy đường đi
+
         return List.of();
     }
 
